@@ -113,15 +113,15 @@ func handleSnapshot(sc *bufio.Scanner, r *repo.Repo, id, prevID string) {
 }
 
 func ChangeKind(k byte) string {
-    switch k {
-    case 'A':
-        return Green("+")
-    case 'M':
-        return Green("*")
-    case 'D':
-        return Red("-")
-    }
-    return string(k)
+	switch k {
+	case 'A':
+		return Green("+")
+	case 'M':
+		return Green("*")
+	case 'D':
+		return Red("-")
+	}
+	return string(k)
 }
 
 func doDiff(r *repo.Repo, id, prevID string) {

@@ -6,7 +6,7 @@ import (
 )
 
 type Change struct {
-	Kind byte   // 'A' Add, 'M' Modify, 'D' Delete
+	Kind byte // 'A' Add, 'M' Modify, 'D' Delete
 	Path string
 }
 

@@ -33,8 +33,14 @@ func init() {
 	register(Command{
 		Name:  "select",
 		Usage: "select",
-		Desc:  "Browse snapshots interactively (diff / reset / remove)",
+		Desc:  "Interactively select and operate on snapshots",
 		Run:   cmdSelect,
+		VerboseHelp: map[string]string{
+			"d": "diff selected snapshot against the previous one",
+			"r": "reset working directory to selected snapshot",
+			"x": "permanently delete selected snapshot",
+			"b": "back to snapshot list",
+		},
 	})
 	register(Command{
 		Name:  "remove-all",

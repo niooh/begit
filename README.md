@@ -9,9 +9,9 @@ A beginner-friendly snapshot tool that follows the philosophy of Git.
 Requires Go 1.16+.
 
 ```sh
-make build        # builds ./bin/begit
+make build    # builds ./bin/begit
 # or
-make install      # installs to $GOPATH/bin
+make install  # installs to $GOPATH/bin
 ```
 
 ## Quickstart
@@ -32,7 +32,7 @@ begit select             # browse snapshots: diff / reset / remove
 |---|---|
 | `init` | Initialize a begit repository in the current directory |
 | `send "message"` | Create a snapshot |
-| `select` | Browse snapshots interactively |
+| `select` | Interactively select and operate on snapshots |
 | `remove-all <path>` | Remove a relative path from every snapshot |
 | `md` | Export the directory as a Markdown report |
 | `typ` | Export the directory as a Typst report |

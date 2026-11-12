@@ -34,14 +34,19 @@ func paint(code, s string) string {
 }
 
 // add
-func Green(s string) string  { return paint(green, s) }
+func Green(s string) string { return paint(green, s) }
+
 // error, delete
-func Red(s string) string    { return paint(red, s) }
+func Red(s string) string { return paint(red, s) }
+
 // emphasize
 func Yellow(s string) string { return paint(yellow, s) }
+
 // emphasize, list
-func Blue(s string) string   { return paint(blue, s) }
+func Blue(s string) string { return paint(blue, s) }
+
 // alternative
-func Cyan(s string) string   { return paint(cyan, s) }
+func Cyan(s string) string { return paint(cyan, s) }
+
 // slight emphasis
-func Bold(s string) string   { return paint(bold, s) }
+func Bold(s string) string { return paint(bold, s) }
