@@ -27,21 +27,21 @@ func runHelp(args []string) int {
 	fmt.Println(Bold("Desc:") + "  " + c.Desc)
 	if len(c.VerboseHelp) > 0 {
 		fmt.Println()
-		fmt.Println(Bold("Options:"))
+		fmt.Println(Bold("Verbose:"))
 		keys := make([]string, 0, len(c.VerboseHelp))
 		for k := range c.VerboseHelp {
 			keys = append(keys, k)
 		}
 		sort.Strings(keys)
 		for _, k := range keys {
-			fmt.Printf("  %s%s%s\n", Blue(k), spacesAfter(len(k), 18), c.VerboseHelp[k])
+			fmt.Printf("  %s%s%s\n", Blue(k), spacesAfter(len(k), 12), c.VerboseHelp[k])
 		}
 	}
 	return 0
 }
 
 func printOverview() {
-	fmt.Println(Bold("begit") + " - a simple snapshot-based file manager")
+	fmt.Println(Bold("begit") + ", a simple snapshot-based file manager")
 	fmt.Println()
 	fmt.Println(Bold("Usage:") + " begit <command> [args]")
 	fmt.Println(Bold("Help:") + "  begit help <command>")
