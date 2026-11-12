@@ -1,7 +1,16 @@
 package exporter
 
-import "errors"
+import (
+	"fmt"
+	"strings"
+)
 
-var ErrNotImplemented = errors.New("not implemented yet")
+type markdownRenderer struct{}
 
-func ExportMarkdown(workdir string) error { return ErrNotImplemented }
+func (markdownRenderer) Header(m Meta) string {
+	return fmt.Sprintf("# Report\n\n- Generated: `%s`\n\n", m.Generated.Format(rfc3339))
+}
+
+func (markdownRenderer) Heading(level int, text string) string {
+	return strings.Repeat("#", level) + " " + text + "\n\n"
+}
