@@ -1,8 +1,10 @@
 # begit
 
-A beginner-friendly snapshot tool that follows the philosophy of Git.
+A **beginner-friendly** snapshot tool inspired by **[git](https://github.com/git/git)**.
 
-`begit` lets you snapshot your working directory, browse and reset to past snapshots, and clean up files across all snapshots — without branches, staging areas, or commit hashes to memorize.
+`begit` lets you easily snapshot your working directory, browse and reset to past
+snapshots, and clean up files across all snapshots. All commands and arguments are
+short and intuitive.
 
 ## Build
 
@@ -41,4 +43,4 @@ begit select             # browse snapshots: diff / reset / remove
 ## How it works
 
 - Snapshots live under `.__begit__/snapshots/<id>/`, where `<id>` is a UTC timestamp.
-- Snapshot metadata is stored in `.__begit__.json`.
+- Snapshot metadata is stored in `.__begit__/info.json`.
