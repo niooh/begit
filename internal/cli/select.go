@@ -57,7 +57,7 @@ func cmdSelect(args []string) int {
 		}
 		handleSnapshot(sc, r, rec.ID, prevID)
 
-		// remove 可能改动了 info.json，重新加载
+		// `remove` operation may have modified info.json, reload it
 		if r2, err := repo.Open(r.Root); err == nil {
 			r.Info = r2.Info
 		}
@@ -69,15 +69,15 @@ func printList(r *repo.Repo) {
 	for i := len(r.Info.Snapshots) - 1; i >= 0; i-- {
 		rec := r.Info.Snapshots[i]
 		idx := len(r.Info.Snapshots) - i
-		fmt.Printf("  %d. [%s] %s  %s\n",
-			idx, rec.ID, rec.Time.Format("2006-01-02 15:04:05"), rec.Message)
+		fmt.Printf("  %s %s  %s  %s\n", Bold(fmt.Sprintf("%d", idx)),
+		Blue(rec.ID), rec.Time.Format("2006-01-02 15:04:05"), rec.Message)
 	}
 }
 
 func handleSnapshot(sc *bufio.Scanner, r *repo.Repo, id, prevID string) {
 	for {
 		fmt.Printf("Selected [%s]\n", id)
-		fmt.Println("  d) diff    r) reset    x) remove    b) back")
+		fmt.Println("  (d) diff    (r) reset    (x) remove    (b) back")
 		fmt.Print("> ")
 		if !sc.Scan() {
 			return

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 )
 
 func runHelp(args []string) int {
@@ -13,38 +14,39 @@ func runHelp(args []string) int {
 	}
 	name := args[0]
 	if name == "help" {
-		fmt.Println("Usage: help [command]")
-		fmt.Println("Desc:  Show help for a command, or overview when no command is given")
+		fmt.Println(Bold("Usage:") + " help [command]")
+		fmt.Println(Bold("Desc:") + "  Show help for a command, or overview when no command is given")
 		return 0
 	}
 	c, ok := commands[name]
 	if !ok {
-		fmt.Fprintf(os.Stderr, "unknown command: %s\n", name)
+		fmt.Fprintf(os.Stderr, "%s unknown command: %s\n", Red("error:"), name)
 		return 1
 	}
-	fmt.Printf("Usage: %s\n", c.Usage)
-	fmt.Printf("Desc:  %s\n", c.Desc)
+	fmt.Println(Bold("Usage:") + " " + c.Usage)
+	fmt.Println(Bold("Desc:") + "  " + c.Desc)
 	if len(c.VerboseHelp) > 0 {
-		fmt.Println("\nOptions:")
+		fmt.Println()
+		fmt.Println(Bold("Options:"))
 		keys := make([]string, 0, len(c.VerboseHelp))
 		for k := range c.VerboseHelp {
 			keys = append(keys, k)
 		}
 		sort.Strings(keys)
 		for _, k := range keys {
-			fmt.Printf("  %-18s %s\n", k, c.VerboseHelp[k])
+			fmt.Printf("  %s%s%s\n", Blue(k), spacesAfter(len(k), 18), c.VerboseHelp[k])
 		}
 	}
 	return 0
 }
 
 func printOverview() {
-	fmt.Println("begit - a simple snapshot-based file manager")
+	fmt.Println(Bold("begit") + " - a simple snapshot-based file manager")
 	fmt.Println()
-	fmt.Println("Usage: begit <command> [args]")
-	fmt.Println("Help:  begit help <command>")
+	fmt.Println(Bold("Usage:") + " begit <command> [args]")
+	fmt.Println(Bold("Help:") + "  begit help <command>")
 	fmt.Println()
-	fmt.Println("Commands:")
+	fmt.Println(Bold("Commands:"))
 	names := make([]string, 0, len(commands))
 	for n := range commands {
 		names = append(names, n)
@@ -52,6 +54,14 @@ func printOverview() {
 	sort.Strings(names)
 	for _, n := range names {
 		c := commands[n]
-		fmt.Printf("  %-12s %s\n", c.Name, c.Desc)
+		fmt.Printf("  %s%s%s\n", Blue(c.Name), spacesAfter(len(c.Name), 12), c.Desc)
 	}
+}
+
+// spacesAfter returns the padding needed to reach width visible columns,
+func spacesAfter(visibleLen, width int) string {
+	if visibleLen >= width {
+		return " "
+	}
+	return strings.Repeat(" ", width-visibleLen+1)
 }
