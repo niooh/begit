@@ -73,15 +73,15 @@ func printList(r *repo.Repo) {
 		if t, err := repo.ParseSnapshotID(rec.ID); err == nil {
 			ts = t.Format("2006-01-02 15:04:05")
 		}
-		fmt.Printf("  %s %s  %s  %s\n", Bold(fmt.Sprintf("%d", idx)),
+		fmt.Printf("  %s %s\n  %s  %s\n", Bold(fmt.Sprintf("%d", idx)),
 			Blue(rec.ID), ts, rec.Message)
 	}
 }
 
 func handleSnapshot(sc *bufio.Scanner, r *repo.Repo, id, prevID string) {
+	fmt.Printf("Selected %s\n", Blue(id))
 	for {
-		fmt.Printf("Selected [%s]\n", id)
-		fmt.Println("  (d) diff    (r) reset    (x) remove    (b) back")
+		fmt.Println("\n  (d) diff  (r) reset  (x) remove  (b) back")
 		fmt.Print("> ")
 		if !sc.Scan() {
 			return
@@ -102,7 +102,7 @@ func handleSnapshot(sc *bufio.Scanner, r *repo.Repo, id, prevID string) {
 				if err := removeSnapshot(r, id); err != nil {
 					fmt.Fprintln(os.Stderr, "error:", err)
 				} else {
-					fmt.Printf("removed [%s]\n", id)
+					fmt.Printf("removed %s\n", Blue(id))
 				}
 				return
 			}

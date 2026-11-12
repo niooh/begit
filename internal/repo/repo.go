@@ -19,7 +19,7 @@ const (
 	idLen        = 18                // 15 + 3-digit milliseconds
 )
 
-var ErrNotARepo = errors.New("not a begit repository (or any parent up to root): .__begit__ not found")
+var ErrNotARepo = errors.New("not a begit repository, as .__begit__ not found")
 
 type SnapshotRecord struct {
 	ID      string `json:"id"`
