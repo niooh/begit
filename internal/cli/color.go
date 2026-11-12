@@ -32,8 +32,13 @@ func paint(code, s string) string {
 	return code + s + reset
 }
 
-func Bold(s string) string   { return paint(bold, s) }
+// error
 func Red(s string) string    { return paint(red, s) }
+// warm
 func Yellow(s string) string { return paint(yellow, s) }
+// emphasize, list
 func Blue(s string) string   { return paint(blue, s) }
+// alternative
 func Cyan(s string) string   { return paint(cyan, s) }
+// slight emphasis
+func Bold(s string) string   { return paint(bold, s) }

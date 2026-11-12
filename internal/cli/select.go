@@ -69,8 +69,12 @@ func printList(r *repo.Repo) {
 	for i := len(r.Info.Snapshots) - 1; i >= 0; i-- {
 		rec := r.Info.Snapshots[i]
 		idx := len(r.Info.Snapshots) - i
+		ts := ""
+		if t, err := repo.ParseSnapshotID(rec.ID); err == nil {
+			ts = t.Format("2006-01-02 15:04:05")
+		}
 		fmt.Printf("  %s %s  %s  %s\n", Bold(fmt.Sprintf("%d", idx)),
-		Blue(rec.ID), rec.Time.Format("2006-01-02 15:04:05"), rec.Message)
+			Blue(rec.ID), ts, rec.Message)
 	}
 }
 

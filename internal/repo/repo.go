@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -13,14 +14,16 @@ const (
 	BegitDirName     = ".__begit__"
 	InfoFileName     = "info.json"
 	SnapshotsDirName = "snapshots"
+
+	idTimeLayout = "20060102_150405" // seconds only
+	idLen        = 18                // 15 + 3-digit milliseconds
 )
 
 var ErrNotARepo = errors.New("not a begit repository (or any parent up to root): .__begit__ not found")
 
 type SnapshotRecord struct {
-	ID      string    `json:"id"`
-	Message string    `json:"message"`
-	Time    time.Time `json:"time"`
+	ID      string `json:"id"`
+	Message string `json:"message"`
 }
 
 type Info struct {
@@ -32,6 +35,27 @@ type Repo struct {
 	Root     string
 	BegitDir string
 	Info     *Info
+}
+
+// FormatSnapshotID returns a 18-char ID in UTC: "20060102_150405" + 3-digit ms.
+func FormatSnapshotID(t time.Time) string {
+	return t.UTC().Format(idTimeLayout) + fmt.Sprintf("%03d", t.Nanosecond()/1_000_000)
+}
+
+// ParseSnapshotID parses an ID produced by FormatSnapshotID and returns UTC time.
+func ParseSnapshotID(id string) (time.Time, error) {
+	if len(id) != idLen {
+		return time.Time{}, fmt.Errorf("bad snapshot id: %q", id)
+	}
+	t, err := time.ParseInLocation(idTimeLayout, id[:15], time.UTC)
+	if err != nil {
+		return time.Time{}, err
+	}
+	ms, err := strconv.Atoi(id[15:])
+	if err != nil || ms > 999 {
+		return time.Time{}, fmt.Errorf("bad snapshot id: %q", id)
+	}
+	return t.Add(time.Duration(ms) * time.Millisecond), nil
 }
 
 func Init(root string) (*Repo, error) {

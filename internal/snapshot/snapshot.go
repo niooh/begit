@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -13,23 +12,19 @@ import (
 	"begit/internal/repo"
 )
 
-const IDLayout = "20060102_150405000"
-
 var ErrNoChanges = errors.New("no changes since last snapshot")
 
 type Snapshot struct {
 	ID      string
 	Dir     string
 	Message string
-	Time    time.Time
 }
 
 func Create(r *repo.Repo, msg string) (*Snapshot, error) {
-	id, dir, err := allocateID(r)
-	if err != nil {
-		return nil, err
-	}
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	now := time.Now()
+	id := repo.FormatSnapshotID(now)
+	dir := r.SnapshotDir(id)
+	if err := os.Mkdir(dir, 0o755); err != nil { // 撞了就报，不静默复用
 		return nil, err
 	}
 	if _, err := copyTree(r.Root, dir, isExcluded); err != nil {
@@ -47,26 +42,13 @@ func Create(r *repo.Repo, msg string) (*Snapshot, error) {
 			return nil, ErrNoChanges
 		}
 	}
-	now := time.Now()
-	rec := repo.SnapshotRecord{ID: id, Message: msg, Time: now}
+	rec := repo.SnapshotRecord{ID: id, Message: msg}
 	r.Info.Snapshots = append(r.Info.Snapshots, rec)
 	if err := r.SaveInfo(); err != nil {
 		os.RemoveAll(dir)
 		return nil, err
 	}
-	return &Snapshot{ID: id, Dir: dir, Message: msg, Time: now}, nil
-}
-
-func allocateID(r *repo.Repo) (string, string, error) {
-	for i := 0; i < 20; i++ {
-		id := time.Now().Format(IDLayout)
-		dir := r.SnapshotDir(id)
-		if _, err := os.Stat(dir); os.IsNotExist(err) {
-			return id, dir, nil
-		}
-		time.Sleep(time.Millisecond)
-	}
-	return "", "", fmt.Errorf("failed to allocate unique snapshot id after retries")
+	return &Snapshot{ID: id, Dir: dir, Message: msg}, nil
 }
 
 func lastSnapshot(r *repo.Repo) *Snapshot {
@@ -74,7 +56,7 @@ func lastSnapshot(r *repo.Repo) *Snapshot {
 		return nil
 	}
 	rec := r.Info.Snapshots[len(r.Info.Snapshots)-1]
-	return &Snapshot{ID: rec.ID, Dir: r.SnapshotDir(rec.ID), Message: rec.Message, Time: rec.Time}
+	return &Snapshot{ID: rec.ID, Dir: r.SnapshotDir(rec.ID), Message: rec.Message}
 }
 
 type meta struct {
