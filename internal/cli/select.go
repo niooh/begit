@@ -36,7 +36,7 @@ func cmdSelect(args []string) int {
 			return 0
 		}
 		printList(r)
-		fmt.Print("Select number (q to quit): ")
+		fmt.Print("\nSelect number (q to quit): ")
 		if !sc.Scan() {
 			return 0
 		}
@@ -65,7 +65,7 @@ func cmdSelect(args []string) int {
 }
 
 func printList(r *repo.Repo) {
-	fmt.Println("Snapshots (newest first):")
+	fmt.Println("Snapshots:")
 	for i := len(r.Info.Snapshots) - 1; i >= 0; i-- {
 		rec := r.Info.Snapshots[i]
 		idx := len(r.Info.Snapshots) - i
@@ -73,7 +73,7 @@ func printList(r *repo.Repo) {
 		if t, err := repo.ParseSnapshotID(rec.ID); err == nil {
 			ts = t.Format("2006-01-02 15:04:05")
 		}
-		fmt.Printf("  %s %s\n  %s  %s\n", Bold(fmt.Sprintf("%d", idx)),
+		fmt.Printf("  %s %s\n  %s  %s\n", Yellow(fmt.Sprintf("%d", idx)),
 			Blue(rec.ID), ts, rec.Message)
 	}
 }
@@ -81,7 +81,7 @@ func printList(r *repo.Repo) {
 func handleSnapshot(sc *bufio.Scanner, r *repo.Repo, id, prevID string) {
 	fmt.Printf("Selected %s\n", Blue(id))
 	for {
-		fmt.Println("\n  (d) diff  (r) reset  (x) remove  (b) back")
+		fmt.Println("\n  " + Yellow("(d)") + " diff " + Yellow("(r)") + " reset " + Yellow("(x)") + " remove " + Yellow("(b)") + " back")
 		fmt.Print("> ")
 		if !sc.Scan() {
 			return
@@ -112,6 +112,18 @@ func handleSnapshot(sc *bufio.Scanner, r *repo.Repo, id, prevID string) {
 	}
 }
 
+func ChangeKind(k byte) string {
+    switch k {
+    case 'A':
+        return Green("+")
+    case 'M':
+        return Green("*")
+    case 'D':
+        return Red("-")
+    }
+    return string(k)
+}
+
 func doDiff(r *repo.Repo, id, prevID string) {
 	var prevDir string
 	if prevID != "" {
@@ -127,7 +139,7 @@ func doDiff(r *repo.Repo, id, prevID string) {
 		return
 	}
 	for _, c := range changes {
-		fmt.Printf("  %c %s\n", c.Kind, c.Path)
+		fmt.Printf("  %s %s\n", ChangeKind(c.Kind), c.Path)
 	}
 }
 

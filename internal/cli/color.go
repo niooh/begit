@@ -5,6 +5,7 @@ import "os"
 const (
 	reset  = "\033[0m"
 	bold   = "\033[1m"
+	green  = "\033[32m"
 	red    = "\033[31m"
 	yellow = "\033[33m"
 	blue   = "\033[34m"
@@ -32,9 +33,11 @@ func paint(code, s string) string {
 	return code + s + reset
 }
 
-// error
+// add
+func Green(s string) string  { return paint(green, s) }
+// error, delete
 func Red(s string) string    { return paint(red, s) }
-// warm
+// emphasize
 func Yellow(s string) string { return paint(yellow, s) }
 // emphasize, list
 func Blue(s string) string   { return paint(blue, s) }
