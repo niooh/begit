@@ -10,10 +10,12 @@ import (
 	"begit/internal/repo"
 )
 
-type HistoryEntry struct {
-	ID      string
-	Message string
-	Kind    string // "added", "modified", "deleted"
+// EndID empty means the path is still present in the latest snapshot.
+type Interval struct {
+	StartID  string
+	StartMsg string
+	EndID    string
+	EndMsg   string
 }
 
 // PathHash returns a content hash of the file/folder at p, and whether it exists.
@@ -88,38 +90,30 @@ func PathHash(p string) (string, bool) {
 	return hex.EncodeToString(h.Sum(nil)), true
 }
 
-// History walks snapshots oldest→newest and returns only entries where
-// the content at relPath actually changed. Consecutive snapshots with
-// identical content are collapsed into a single row.
-func History(r *repo.Repo, relPath string) []HistoryEntry {
-	var out []HistoryEntry
-	var prevHash string
+
+// History returns the contiguous existence intervals of relPath across
+func History(r *repo.Repo, relPath string) []Interval {
+	var out []Interval
+	var open *Interval
 	prevExists := false
-	first := true
 
 	for _, rec := range r.Info.Snapshots {
-		h, exists := PathHash(filepath.Join(r.SnapshotDir(rec.ID), relPath))
-		kind := ""
-		if first {
-			if exists {
-				kind = "added"
-			}
-			first = false
-		} else {
-			switch {
-			case !prevExists && exists:
-				kind = "added"
-			case prevExists && !exists:
-				kind = "deleted"
-			case exists && h != prevHash:
-				kind = "modified"
+		_, exists := PathHash(filepath.Join(r.SnapshotDir(rec.ID), relPath))
+		switch {
+		case !prevExists && exists:
+			open = &Interval{StartID: rec.ID, StartMsg: rec.Message}
+		case prevExists && !exists:
+			if open != nil {
+				open.EndID = rec.ID
+				open.EndMsg = rec.Message
+				out = append(out, *open)
+				open = nil
 			}
 		}
-		if kind != "" {
-			out = append(out, HistoryEntry{ID: rec.ID, Message: rec.Message, Kind: kind})
-		}
-		prevHash = h
 		prevExists = exists
+	}
+	if open != nil {
+		out = append(out, *open) // still present at the end
 	}
 	return out
 }

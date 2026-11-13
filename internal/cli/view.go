@@ -30,30 +30,33 @@ func cmdView(args []string) int {
 		return 0
 	}
 
-	history := snapshot.History(r, relPath)
-	if len(history) == 0 {
+	intervals := snapshot.History(r, relPath)
+	if len(intervals) == 0 {
 		fmt.Printf("no history for %q\n", relPath)
 		return 0
 	}
 
 	fmt.Printf("History for %q:\n", relPath)
-	for _, h := range history {
-		ts := ""
-		if t, err := repo.ParseSnapshotID(h.ID); err == nil {
-			ts = t.Format("2006-01-02 15:04:05")
+	for i, iv := range intervals {
+		if i > 0 {
+			fmt.Println()
 		}
-		var marker string
-		switch h.Kind {
-		case "added":
-			marker = Green("+")
-		case "modified":
-			marker = Yellow("*")
-		case "deleted":
-			marker = Red("-")
-		default:
-			marker = " "
+		fmt.Printf("  %s %s  %s  %s\n",
+			Green("+"), Blue(iv.StartID), formatID(iv.StartID), iv.StartMsg)
+
+		if iv.EndID == "" {
+			fmt.Printf("  %s still present\n", Cyan("·"))
+			continue
 		}
-		fmt.Printf("  %s %s  %s  %s\n", marker, Blue(h.ID), ts, h.Message)
+		fmt.Printf("  %s %s  %s  %s\n",
+			Red("-"), Blue(iv.EndID), formatID(iv.EndID), iv.EndMsg)
 	}
 	return 0
+}
+
+func formatID(id string) string {
+	if t, err := repo.ParseSnapshotID(id); err == nil {
+		return t.Format("2006-01-02 15:04:05")
+	}
+	return ""
 }
