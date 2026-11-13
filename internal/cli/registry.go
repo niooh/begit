@@ -43,6 +43,32 @@ func init() {
 		},
 	})
 	register(Command{
+		Name:  "ls",
+		Usage: "ls",
+		Desc:  "List snapshots",
+		Run:   cmdLS,
+	})
+	register(Command{
+		Name:  "multi-select",
+		Usage: "multi-select",
+		Desc:  "Select two snapshots and diff or remove them together",
+		Run:   cmdMultiSelect,
+		VerboseHelp: map[string]string{
+			"d": "diff old → new between the two selected snapshots",
+			"x": "permanently delete both selected snapshots",
+			"b": "back to snapshot list",
+		},
+	})
+	register(Command{
+		Name:  "view",
+		Usage: "view <relative-path>",
+		Desc:  "Show the change history of a path across snapshots",
+		Run:   cmdView,
+		VerboseHelp: map[string]string{
+			"<relative-path>": "Exact path relative to the repo root",
+		},
+	})
+	register(Command{
 		Name:  "remove-all",
 		Usage: "remove-all <relative-path>",
 		Desc:  "Remove a relative path from every snapshot",
