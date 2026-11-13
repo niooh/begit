@@ -35,7 +35,7 @@ func cmdMultiSelect(args []string) int {
 			return 0
 		}
 		printList(r)
-		fmt.Print("\nSelect two numbers separated by space (q to quit): ")
+		fmt.Print("\nSelect new-old (e.g. 1-3, q to quit): ")
 		if !sc.Scan() {
 			return 0
 		}
@@ -43,34 +43,39 @@ func cmdMultiSelect(args []string) int {
 		if input == "" || input == "q" {
 			return 0
 		}
-		fields := strings.Fields(input)
-		if len(fields) != 2 {
-			fmt.Println("please enter exactly two numbers")
+
+		parts := strings.Split(input, "-")
+		if len(parts) != 2 {
+			fmt.Println("please enter in the form new-old (e.g. 1-3)")
 			continue
 		}
-		a, err1 := strconv.Atoi(fields[0])
-		b, err2 := strconv.Atoi(fields[1])
+		newIdx, err1 := strconv.Atoi(strings.TrimSpace(parts[0]))
+		oldIdx, err2 := strconv.Atoi(strings.TrimSpace(parts[1]))
 		if err1 != nil || err2 != nil {
 			fmt.Println("invalid number(s)")
 			continue
 		}
+
 		n := len(r.Info.Snapshots)
-		if a < 1 || a > n || b < 1 || b > n {
+		if newIdx < 1 || newIdx > n || oldIdx < 1 || oldIdx > n {
 			fmt.Println("invalid number(s)")
 			continue
 		}
-		if a == b {
+		if newIdx == oldIdx {
 			fmt.Println("please pick two different snapshots")
 			continue
 		}
-
-		// translate display index -> position (1 = newest)
-		posA, posB := n-a, n-b
-		oldPos, newPos := posA, posB
-		if oldPos > newPos {
-			oldPos, newPos = newPos, oldPos
+		// 1 = newest, so new should have a smaller index than old
+		if newIdx > oldIdx {
+			fmt.Println("new must be more recent than old (lower number = newer)")
+			continue
 		}
-		handleMultiSelect(sc, r, r.Info.Snapshots[oldPos].ID, r.Info.Snapshots[newPos].ID)
+
+		// display index -> position (1 = newest)
+		newPos := n - newIdx
+		oldPos := n - oldIdx
+
+		handleMultiSelect(sc, r, oldPos, newPos)
 
 		// removal may have changed info.json
 		if r2, err := repo.Open(r.Root); err == nil {
@@ -79,11 +84,13 @@ func cmdMultiSelect(args []string) int {
 	}
 }
 
-func handleMultiSelect(sc *bufio.Scanner, r *repo.Repo, idOld, idNew string) {
-	fmt.Printf("Selected old=%s new=%s\n", Blue(idOld), Blue(idNew))
+func handleMultiSelect(sc *bufio.Scanner, r *repo.Repo, oldPos, newPos int) {
+	idOld := r.Info.Snapshots[oldPos].ID
+	idNew := r.Info.Snapshots[newPos].ID
+	fmt.Printf("Selected new=%s old=%s\n", Blue(idNew), Blue(idOld))
 	for {
 		fmt.Println("\n  " + Yellow("(d)") + " diff  " + Yellow("(x)") +
-			" remove both  " + Yellow("(b)") + " back")
+			" remove range  " + Yellow("(b)") + " back")
 		fmt.Print("> ")
 		if !sc.Scan() {
 			return
@@ -93,11 +100,18 @@ func handleMultiSelect(sc *bufio.Scanner, r *repo.Repo, idOld, idNew string) {
 			// doDiff(r, cur, prev): show changes prev -> cur
 			doDiff(r, idNew, idOld)
 		case "x":
-			if confirm(sc, "Remove both selected snapshots permanently? [y/N]: ") {
-				if err := removeTwoSnapshots(r, idOld, idNew); err != nil {
+			selected := r.Info.Snapshots[oldPos : newPos+1]
+			ids := make([]string, len(selected))
+			for i, rec := range selected {
+				ids[i] = rec.ID
+			}
+			if confirm(sc, fmt.Sprintf(
+				"Remove %d snapshot(s) from %s to %s? [y/N]: ",
+				len(ids), Blue(idOld), Blue(idNew))) {
+				if err := removeSnapshots(r, ids...); err != nil {
 					fmt.Fprintln(os.Stderr, "error:", err)
 				} else {
-					fmt.Printf("removed %s and %s\n", Blue(idOld), Blue(idNew))
+					fmt.Printf("removed %d snapshot(s)\n", len(ids))
 				}
 				return
 			}
@@ -107,7 +121,7 @@ func handleMultiSelect(sc *bufio.Scanner, r *repo.Repo, idOld, idNew string) {
 	}
 }
 
-func removeTwoSnapshots(r *repo.Repo, ids ...string) error {
+func removeSnapshots(r *repo.Repo, ids ...string) error {
 	drop := make(map[string]struct{}, len(ids))
 	for _, id := range ids {
 		if err := os.RemoveAll(r.SnapshotDir(id)); err != nil {

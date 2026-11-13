@@ -51,12 +51,13 @@ func init() {
 	register(Command{
 		Name:  "multi-select",
 		Usage: "multi-select",
-		Desc:  "Select two snapshots and diff or remove them together",
+		Desc:  "Pick a new-old pair, then diff the pair or remove every snapshot between them",
 		Run:   cmdMultiSelect,
 		VerboseHelp: map[string]string{
-			"d": "diff old → new between the two selected snapshots",
-			"x": "permanently delete both selected snapshots",
-			"b": "back to snapshot list",
+			"new-old": "input, e.g. 1-3 (newer-older)",
+			"d":       "diff new vs old",
+			"x":       "permanently delete every snapshot between old and new, inclusive",
+			"b":       "back to snapshot list",
 		},
 	})
 	register(Command{
