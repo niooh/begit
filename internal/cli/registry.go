@@ -23,11 +23,11 @@ func init() {
 	})
 	register(Command{
 		Name:  "send",
-		Usage: `send "message"`,
+		Usage: `send <message>`,
 		Desc:  "Create a full snapshot of the current directory",
 		Run:   cmdSend,
 		VerboseHelp: map[string]string{
-			`"message"`: "Commit message stored in info.json",
+			`<message>`: "Commit message, which will be stored in info.json",
 		},
 	})
 	register(Command{
@@ -55,7 +55,7 @@ func init() {
 		Run:   cmdMultiSelect,
 		VerboseHelp: map[string]string{
 			"new-old": "input, e.g. 1-3 (newer-older)",
-			"d":       "diff new vs old",
+			"d":       "diff new and old",
 			"x":       "permanently delete every snapshot between old and new, inclusive",
 			"b":       "back to snapshot list",
 		},
@@ -63,7 +63,7 @@ func init() {
 	register(Command{
 		Name:  "view",
 		Usage: "view <relative-path>",
-		Desc:  "Show the change history of a path across snapshots",
+		Desc:  "View the change history of a path across snapshots",
 		Run:   cmdView,
 		VerboseHelp: map[string]string{
 			"<relative-path>": "Exact path relative to the repo root",

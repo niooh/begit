@@ -32,13 +32,16 @@ begit select             # browse snapshots: diff / reset / remove
 
 | Command | Description |
 |---|---|
+| `help [command]` | Show help and details |
 | `init` | Initialize a begit repository in the current directory |
-| `send "message"` | Create a snapshot |
+| `send <message>` | Create a snapshot |
 | `select` | Interactively select and operate on snapshots |
+| `ls` | List snapshots |
+| `view <path>` | View the change history of a path across snapshots |
 | `remove-all <path>` | Remove a relative path from every snapshot |
 | `md` | Export the directory as a Markdown report |
 | `typ` | Export the directory as a Typst report |
-| `help [command]` | Show help |
+| … | … |
 
 ## How it works
 
