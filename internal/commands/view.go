@@ -1,10 +1,11 @@
-package cli
+package commands
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 
+	"begit/internal/cli"
 	"begit/internal/repo"
 	"begit/internal/snapshot"
 )
@@ -42,14 +43,14 @@ func cmdView(args []string) int {
 			fmt.Println()
 		}
 		fmt.Printf("  %s %s  %s  %s\n",
-			Green("+"), Blue(iv.StartID), formatID(iv.StartID), iv.StartMsg)
+			cli.Green("+"), cli.Blue(iv.StartID), formatID(iv.StartID), iv.StartMsg)
 
 		if iv.EndID == "" {
-			fmt.Printf("  %s still present\n", Cyan("·"))
+			fmt.Printf("  %s still present\n", cli.Cyan("·"))
 			continue
 		}
 		fmt.Printf("  %s %s  %s  %s\n",
-			Red("-"), Blue(iv.EndID), formatID(iv.EndID), iv.EndMsg)
+			cli.Red("-"), cli.Blue(iv.EndID), formatID(iv.EndID), iv.EndMsg)
 	}
 	return 0
 }

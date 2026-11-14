@@ -1,4 +1,4 @@
-package cli
+package commands
 
 import (
 	"bufio"
@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"begit/internal/cli"
 	"begit/internal/repo"
 	"begit/internal/snapshot"
 )
@@ -44,7 +45,7 @@ func cmdRemoveAll(args []string) int {
 	}
 	fmt.Printf("Will remove %q from %d snapshot(s):\n", clean, len(hits))
 	for _, id := range hits {
-		fmt.Printf("  %s\n", Blue(id))
+		fmt.Printf("  %s\n", cli.Blue(id))
 	}
 	sc := bufio.NewScanner(os.Stdin)
 	if !confirm(sc, "Proceed? [y/N]: ") {

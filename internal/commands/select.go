@@ -1,4 +1,4 @@
-package cli
+package commands
 
 import (
 	"bufio"
@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"begit/internal/cli"
 	"begit/internal/repo"
 	"begit/internal/snapshot"
 )
@@ -73,15 +74,15 @@ func printList(r *repo.Repo) {
 		if t, err := repo.ParseSnapshotID(rec.ID); err == nil {
 			ts = t.Format("2006-01-02 15:04:05")
 		}
-		fmt.Printf("  %s %s\n  %s  %s\n", Yellow(fmt.Sprintf("%d", idx)),
-			Blue(rec.ID), ts, rec.Message)
+		fmt.Printf("  %s %s\n  %s  %s\n", cli.Yellow(fmt.Sprintf("%d", idx)),
+			cli.Blue(rec.ID), ts, rec.Message)
 	}
 }
 
 func handleSnapshot(sc *bufio.Scanner, r *repo.Repo, id, prevID string) {
-	fmt.Printf("Selected %s\n", Blue(id))
+	fmt.Printf("Selected %s\n", cli.Blue(id))
 	for {
-		fmt.Println("\n  " + Yellow("(d)") + " diff " + Yellow("(r)") + " reset " + Yellow("(x)") + " remove " + Yellow("(b)") + " back")
+		fmt.Println("\n  " + cli.Yellow("(d)") + " diff " + cli.Yellow("(r)") + " reset " + cli.Yellow("(x)") + " remove " + cli.Yellow("(b)") + " back")
 		fmt.Print("> ")
 		if !sc.Scan() {
 			return
@@ -102,7 +103,7 @@ func handleSnapshot(sc *bufio.Scanner, r *repo.Repo, id, prevID string) {
 				if err := removeSnapshot(r, id); err != nil {
 					fmt.Fprintln(os.Stderr, "error:", err)
 				} else {
-					fmt.Printf("removed %s\n", Blue(id))
+					fmt.Printf("removed %s\n", cli.Blue(id))
 				}
 				return
 			}
@@ -115,11 +116,11 @@ func handleSnapshot(sc *bufio.Scanner, r *repo.Repo, id, prevID string) {
 func ChangeKind(k byte) string {
 	switch k {
 	case 'A':
-		return Green("+")
+		return cli.Green("+")
 	case 'M':
-		return Green("*")
+		return cli.Green("*")
 	case 'D':
-		return Red("-")
+		return cli.Red("-")
 	}
 	return string(k)
 }

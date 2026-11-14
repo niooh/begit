@@ -1,4 +1,4 @@
-package cli
+package commands
 
 import (
 	"bufio"
@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"begit/internal/cli"
 	"begit/internal/repo"
 )
 
@@ -87,10 +88,10 @@ func cmdMultiSelect(args []string) int {
 func handleMultiSelect(sc *bufio.Scanner, r *repo.Repo, oldPos, newPos int) {
 	idOld := r.Info.Snapshots[oldPos].ID
 	idNew := r.Info.Snapshots[newPos].ID
-	fmt.Printf("Selected new=%s old=%s\n", Blue(idNew), Blue(idOld))
+	fmt.Printf("Selected new=%s old=%s\n", cli.Blue(idNew), cli.Blue(idOld))
 	for {
-		fmt.Println("\n  " + Yellow("(d)") + " diff  " + Yellow("(x)") +
-			" remove range  " + Yellow("(b)") + " back")
+		fmt.Println("\n  " + cli.Yellow("(d)") + " diff  " + cli.Yellow("(x)") +
+			" remove range  " + cli.Yellow("(b)") + " back")
 		fmt.Print("> ")
 		if !sc.Scan() {
 			return
@@ -107,7 +108,7 @@ func handleMultiSelect(sc *bufio.Scanner, r *repo.Repo, oldPos, newPos int) {
 			}
 			if confirm(sc, fmt.Sprintf(
 				"Remove %d snapshot(s) from %s to %s? [y/N]: ",
-				len(ids), Blue(idOld), Blue(idNew))) {
+				len(ids), cli.Blue(idOld), cli.Blue(idNew))) {
 				if err := removeSnapshots(r, ids...); err != nil {
 					fmt.Fprintln(os.Stderr, "error:", err)
 				} else {

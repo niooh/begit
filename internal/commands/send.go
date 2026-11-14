@@ -1,10 +1,11 @@
-package cli
+package commands
 
 import (
 	"errors"
 	"fmt"
 	"os"
 
+	"begit/internal/cli"
 	"begit/internal/repo"
 	"begit/internal/snapshot"
 )
@@ -34,6 +35,6 @@ func cmdSend(args []string) int {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		return 1
 	}
-	fmt.Printf("%s %s\n", Blue(s.ID), s.Message)
+	fmt.Printf("%s %s\n", cli.Blue(s.ID), s.Message)
 	return 0
 }

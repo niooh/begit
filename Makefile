@@ -1,5 +1,4 @@
-.PHONY: build test clean
-
+.PHONY: test clean path install
 
 build:
 	go build -o bin/begit ./cmd/begit
@@ -18,3 +17,6 @@ path:
 
 install:
 	go install ./cmd/begit
+
+release:
+	CGO_ENABLED=0 go build -ldflags "-s -w" -o bin/begit ./cmd/begit

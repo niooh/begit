@@ -90,7 +90,6 @@ func PathHash(p string) (string, bool) {
 	return hex.EncodeToString(h.Sum(nil)), true
 }
 
-
 // History returns the contiguous existence intervals of relPath across
 func History(r *repo.Repo, relPath string) []Interval {
 	var out []Interval
